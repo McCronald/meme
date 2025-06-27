@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>McCronalds</title>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Luckiest Guy', cursive;
+      background: #ffe600;
+      color: #b30000;
+    }
+
+    header {
+      background: #ff0000;
+      padding: 20px 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 2.4em;
+      color: white;
+      margin: 0;
+    }
+
+    header img.corner {
+      display: none; /* Hidden on mobile */
+    }
+
+    .hero {
+      text-align: center;
+      padding: 30px 15px;
+    }
+
+    .hero h2 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+
+    .image-container {
+      max-width: 90%;
+      margin: 0 auto 20px;
+    }
+
+    .image-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 3px solid #b30000;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .total-supply {
+      font-size: 1.3em;
+      margin-top: 10px;
+      animation: pulseGlow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        text-shadow: 0 0 8px #b30000;
+        color: #b30000;
+      }
+      50% {
+        text-shadow: 0 0 20px #ff0000;
+        color: #ff0000;
+      }
+    }
+
+    .button-link,
+    .side-panel {
+      display: block;
+      padding: 15px;
+      margin: 12px auto;
+      font-size: 1.4em;
+      border: 2px solid #b30000;
+      border-radius: 50px;
+      width: 85%;
+      background: #ffe600;
+      color: #b30000;
+      font-family: 'Luckiest Guy', cursive;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .button-link:hover,
+    .side-panel:hover {
+      background: #b30000;
+      color: #ffe600;
+    }
+
+    .bottom-bar {
+      background: #b30000;
+      color: #ffe600;
+      font-size: 1em;
+      text-align: center;
+      padding: 12px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      box-shadow: 0 -3px 10px rgba(179, 0, 0, 0.6);
+      z-index: 10000;
+    }
+
+    /* Desktop Enhancements */
+    @media (min-width: 769px) {
+      header {
+        padding: 40px 20px;
+      }
+
+      header img.corner {
+        display: block;
+        position: absolute;
+        top: 10px;
+        width: 137px;
+      }
+
+      header img.left {
+        left: 20px;
+      }
+
+      header img.right {
+        right: 20px;
+      }
+
+      header h1 {
+        font-size: 3em;
+      }
+
+      .hero h2 {
+        font-size: 2.5em;
+      }
+
+      .image-container {
+        max-width: 650px;
+      }
+
+      .total-supply {
+        font-size: 2em;
+      }
+
+      .button-link {
+        position: absolute;
+        padding: 21px 40px;
+        font-size: 2em;
+        width: auto;
+      }
+
+      .about-button {
+        top: 40%;
+        left: 30%;
+      }
+
+      .twitter-button {
+        top: 40%;
+        left: 55%;
+      }
+
+      .side-panel {
+        position: fixed;
+        top: 40%;
+        width: 180px;
+        z-index: 1000;
+        transform: translateY(-50%);
+      }
+
+      .side-panel.left {
+        left: 10px;
+      }
+
+      .side-panel.right {
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="mccronald-face.png" class="corner left" alt="McCronald Left"/>
+    <img src="mccronald-face.png" class="corner right" alt="McCronald Right"/>
+    <h1>🍔 McCronalds</h1>
+  </header>
+
+  <div class="hero">
+    <h2>$MCD – The original token on Cronos chain</h2>
+
+    <div class="image-container">
+      <img src="mcd-token.png" alt="MCD Token Logo" />
+      <div class="total-supply">TOTAL SUPPLY – 1,000,000,000</div>
+    </div>
+
+    <a href="about.html" class="button-link about-button">ABOUT US</a>
+    <a href="https://x.com/McCronalds" target="_blank" class="button-link twitter-button">TWITTER</a>
+    <a href="faq.html" class="side-panel left">FAQ</a>
+    <a href="whitepaper.html" class="side-panel right">WHITEPAPER</a>
+  </div>
+
+  <footer class="bottom-bar">
+    Made with ❤️ by McCronalds community
+  </footer>
+</body>
+</html>
