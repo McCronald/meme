@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Disable zoom on mobile devices -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>McCronalds Airdrop Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #ffe600;
+      font-family: 'Luckiest Guy', cursive;
+      color: #b30000;
+      margin: 0;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    /* New style for the clown image */
+    .clown-image {
+      display: block;
+      margin: 20px auto 40px auto;
+      max-width: 300px;
+      width: 80%;
+      height: auto;
+    }
+
+    .instructions {
+      font-size: 1.4em;
+      margin-bottom: 30px;
+    }
+
+    .counter {
+      font-size: 2em;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+
+    #clickButton,
+    #resetButton {
+      background: #b30000;
+      color: #ffe600;
+      font-size: 2em;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: background 0.3s ease;
+      margin: 30px;
+    }
+
+    #clickButton:hover:not(:disabled),
+    #resetButton:hover {
+      background: #ff0000;
+    }
+
+    #clickButton:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .timer {
+      font-size: 1.5em;
+      margin-top: 15px;
+    }
+
+    .result {
+      margin-top: 30px;
+      font-size: 2em;
+    }
+
+    #resetButton {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🥳 McCronalds Airdrop Game</h1>
+
+  <!-- Added clown image here -->
+  <img src="clown.png" alt="McCronalds Clown" class="clown-image" />
+
+  <div class="instructions">Click the button 200 times in under 15 seconds to win the airdrop!</div>
+  
+  <div class="counter">Clicks: <span id="clickCount">0</span></div>
+  <button id="clickButton">CLICK ME FAST!</button>
+  <button id="resetButton">🔁 TRY AGAIN</button>
+  <div class="timer">⏱ Time Left: <span id="timeLeft">15</span>s</div>
+  <div class="result" id="result"></div>
+
+  <script>
+    let count = 0;
+    let timeLeft = 15;
+    let timer = null;
+    let gameActive = false;
+
+    const clickBtn = document.getElementById("clickButton");
+    const resetBtn = document.getElementById("resetButton");
+    const clickDisplay = document.getElementById("clickCount");
+    const timeDisplay = document.getElementById("timeLeft");
+    const resultDisplay = document.getElementById("result");
+
+    function endGame() {
+      clearInterval(timer);
+      clickBtn.disabled = true;
+      resetBtn.style.display = "inline-block";
+
+      if (count >= 200) {
+        resultDisplay.textContent = "🎉 You WIN the airdrop!";
+        resultDisplay.style.color = "#008000";
+      } else {
+        resultDisplay.textContent = "😢 You LOST! Try again!";
+        resultDisplay.style.color = "#b30000";
+      }
+    }
+
+    clickBtn.addEventListener("click", () => {
+      if (!gameActive) {
+        gameActive = true;
+        timer = setInterval(() => {
+          timeLeft--;
+          timeDisplay.textContent = timeLeft;
+
+          if (timeLeft <= 0) {
+            endGame();
+          }
+        }, 1000);
+      }
+
+      if (timeLeft > 0) {
+        count++;
+        clickDisplay.textContent = count;
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      count = 0;
+      timeLeft = 15;
+      gameActive = false;
+
+      clickDisplay.textContent = count;
+      timeDisplay.textContent = timeLeft;
+      resultDisplay.textContent = "";
+
+      clickBtn.disabled = false;
+      resetBtn.style.display = "none";
+    });
+  </script>
+</body>
+</html>
