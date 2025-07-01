@@ -83,7 +83,6 @@
       display: none;
     }
 
-    /* Music controls container fixed top right */
     .music-controls {
       position: fixed;
       top: 10px;
@@ -134,7 +133,6 @@
     #volumeSlider:hover {
       background: #ff0000;
     }
-    /* WebKit */
     #volumeSlider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -145,12 +143,11 @@
       cursor: pointer;
       border: 2px solid #b30000;
       transition: background 0.3s ease;
-      margin-top: -6px; /* center thumb */
+      margin-top: -6px;
     }
     #volumeSlider::-webkit-slider-thumb:hover {
       background: #ff0;
     }
-    /* Firefox */
     #volumeSlider::-moz-range-thumb {
       width: 18px;
       height: 18px;
@@ -180,7 +177,6 @@
   <div class="timer">⏱ Time Left: <span id="timeLeft">15</span>s</div>
   <div class="result" id="result"></div>
 
-  <!-- Music Controls -->
   <div class="music-controls" title="Background music controls">
     <button id="muteButton" aria-label="Mute/Unmute music">🔊</button>
     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" />
@@ -201,12 +197,10 @@
     const timeDisplay = document.getElementById("timeLeft");
     const resultDisplay = document.getElementById("result");
 
-    // Music controls
     const backgroundMusic = document.getElementById("backgroundMusic");
     const muteBtn = document.getElementById("muteButton");
     const volumeSlider = document.getElementById("volumeSlider");
 
-    // SOUND POOL FOR FAST CLICKING
     const soundPoolSize = 5;
     const clickSounds = [];
     for (let i = 0; i < soundPoolSize; i++) {
@@ -222,7 +216,6 @@
       soundIndex = (soundIndex + 1) % soundPoolSize;
     }
 
-    // VICTORY SOUND
     const victorySound = new Audio("victory.mp3");
     victorySound.preload = "auto";
 
@@ -231,16 +224,16 @@
       clickBtn.disabled = true;
       resetBtn.style.display = "inline-block";
 
-      if (count >= 50) {
+      if (count >= 190) {
         resultDisplay.textContent = "🎉 You WIN the airdrop!";
         resultDisplay.style.color = "#008000";
         victorySound.currentTime = 0;
         victorySound.play();
-
         tweetBtn.style.display = "inline-block";
       } else {
         resultDisplay.textContent = "😢 You LOST! Try again!";
         resultDisplay.style.color = "#b30000";
+        tweetBtn.style.display = "none"; // Hide if didn't win
       }
     }
 
@@ -250,7 +243,6 @@
         timer = setInterval(() => {
           timeLeft--;
           timeDisplay.textContent = timeLeft;
-
           if (timeLeft <= 0) {
             endGame();
           }
@@ -291,9 +283,6 @@
       document.body.removeChild(a);
     });
 
-    // Music control logic
-
-    // Initialize volume and mute status
     backgroundMusic.volume = 0.5;
     volumeSlider.value = backgroundMusic.volume;
 
@@ -316,20 +305,14 @@
 
     volumeSlider.addEventListener("input", () => {
       backgroundMusic.volume = parseFloat(volumeSlider.value);
-      if (backgroundMusic.volume === 0) {
-        backgroundMusic.muted = true;
-      } else {
-        backgroundMusic.muted = false;
-      }
+      backgroundMusic.muted = backgroundMusic.volume === 0;
       updateMuteButton();
     });
 
     updateMuteButton();
 
-    // Try autoplay on load; if blocked, play on first user interaction
     function tryPlayMusic() {
       backgroundMusic.play().catch(() => {
-        // wait for user interaction to play
         function userPlay() {
           backgroundMusic.play();
           window.removeEventListener("click", userPlay);
