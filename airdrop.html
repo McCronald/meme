@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Disable zoom on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>McCronalds Airdrop Game</title>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet" />
   <style>
     body {
       background: #ffe600;
@@ -14,6 +13,9 @@
       margin: 0;
       padding: 50px 20px;
       text-align: center;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
     h1 {
@@ -21,7 +23,6 @@
       margin-bottom: 10px;
     }
 
-    /* New style for the clown image */
     .clown-image {
       display: block;
       margin: 20px auto 40px auto;
@@ -42,7 +43,8 @@
     }
 
     #clickButton,
-    #resetButton {
+    #resetButton,
+    #tweetButton {
       background: #b30000;
       color: #ffe600;
       font-size: 2em;
@@ -52,11 +54,12 @@
       cursor: pointer;
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       transition: background 0.3s ease;
-      margin: 30px;
+      margin: 20px;
     }
 
     #clickButton:hover:not(:disabled),
-    #resetButton:hover {
+    #resetButton:hover,
+    #tweetButton:hover {
       background: #ff0000;
     }
 
@@ -75,24 +78,115 @@
       font-size: 2em;
     }
 
-    #resetButton {
+    #resetButton,
+    #tweetButton {
       display: none;
+    }
+
+    /* Music controls container fixed top right */
+    .music-controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(179, 0, 0, 0.85);
+      padding: 5px 10px;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      user-select: none;
+      z-index: 9999;
+    }
+
+    #muteButton {
+      background: transparent;
+      border: none;
+      color: #ffe600;
+      font-size: 1.6em;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    #muteButton:hover {
+      color: #ff0000;
+    }
+
+    #volumeSlider {
+      -webkit-appearance: none;
+      width: 100px;
+      height: 6px;
+      background: #b30000;
+      border-radius: 5px;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.3s ease;
+    }
+    #volumeSlider:hover {
+      background: #ff0000;
+    }
+    /* WebKit */
+    #volumeSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #ffe600;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #b30000;
+      transition: background 0.3s ease;
+      margin-top: -6px; /* center thumb */
+    }
+    #volumeSlider::-webkit-slider-thumb:hover {
+      background: #ff0;
+    }
+    /* Firefox */
+    #volumeSlider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #ffe600;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #b30000;
+      transition: background 0.3s ease;
+    }
+    #volumeSlider::-moz-range-thumb:hover {
+      background: #ff0;
     }
   </style>
 </head>
 <body>
   <h1>🥳 McCronalds Airdrop Game</h1>
 
-  <!-- Added clown image here -->
   <img src="clown.png" alt="McCronalds Clown" class="clown-image" />
 
-  <div class="instructions">Click the button 200 times in under 15 seconds to win the airdrop!</div>
-  
+  <div class="instructions">Click the button 190 times in under 15 seconds to win the airdrop!</div>
+
   <div class="counter">Clicks: <span id="clickCount">0</span></div>
   <button id="clickButton">CLICK ME FAST!</button>
   <button id="resetButton">🔁 TRY AGAIN</button>
+  <button id="tweetButton">🚀 GET YOUR $MCD AIRDROP</button>
+
   <div class="timer">⏱ Time Left: <span id="timeLeft">15</span>s</div>
   <div class="result" id="result"></div>
+
+  <!-- Music Controls -->
+  <div class="music-controls" title="Background music controls">
+    <button id="muteButton" aria-label="Mute/Unmute music">🔊</button>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" />
+  </div>
+
+  <audio id="backgroundMusic" src="music.mp3" loop preload="auto"></audio>
 
   <script>
     let count = 0;
@@ -102,18 +196,48 @@
 
     const clickBtn = document.getElementById("clickButton");
     const resetBtn = document.getElementById("resetButton");
+    const tweetBtn = document.getElementById("tweetButton");
     const clickDisplay = document.getElementById("clickCount");
     const timeDisplay = document.getElementById("timeLeft");
     const resultDisplay = document.getElementById("result");
+
+    // Music controls
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    const muteBtn = document.getElementById("muteButton");
+    const volumeSlider = document.getElementById("volumeSlider");
+
+    // SOUND POOL FOR FAST CLICKING
+    const soundPoolSize = 5;
+    const clickSounds = [];
+    for (let i = 0; i < soundPoolSize; i++) {
+      const audio = new Audio("click.mp3");
+      audio.preload = "auto";
+      clickSounds.push(audio);
+    }
+    let soundIndex = 0;
+    function playClickSound() {
+      const sound = clickSounds[soundIndex];
+      sound.currentTime = 0;
+      sound.play();
+      soundIndex = (soundIndex + 1) % soundPoolSize;
+    }
+
+    // VICTORY SOUND
+    const victorySound = new Audio("victory.mp3");
+    victorySound.preload = "auto";
 
     function endGame() {
       clearInterval(timer);
       clickBtn.disabled = true;
       resetBtn.style.display = "inline-block";
 
-      if (count >= 200) {
+      if (count >= 50) {
         resultDisplay.textContent = "🎉 You WIN the airdrop!";
         resultDisplay.style.color = "#008000";
+        victorySound.currentTime = 0;
+        victorySound.play();
+
+        tweetBtn.style.display = "inline-block";
       } else {
         resultDisplay.textContent = "😢 You LOST! Try again!";
         resultDisplay.style.color = "#b30000";
@@ -136,6 +260,7 @@
       if (timeLeft > 0) {
         count++;
         clickDisplay.textContent = count;
+        playClickSound();
       }
     });
 
@@ -150,6 +275,73 @@
 
       clickBtn.disabled = false;
       resetBtn.style.display = "none";
+      tweetBtn.style.display = "none";
+    });
+
+    tweetBtn.addEventListener("click", () => {
+      const tweetText = "I just won the $MCD airdrop from @McCronalds! Visit their website to learn more and submit your wallet address to claim yours!";
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+
+      const a = document.createElement("a");
+      a.href = tweetUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    // Music control logic
+
+    // Initialize volume and mute status
+    backgroundMusic.volume = 0.5;
+    volumeSlider.value = backgroundMusic.volume;
+
+    function updateMuteButton() {
+      muteBtn.textContent = backgroundMusic.muted || backgroundMusic.volume === 0 ? "🔇" : "🔊";
+    }
+
+    muteBtn.addEventListener("click", () => {
+      if (backgroundMusic.muted || backgroundMusic.volume === 0) {
+        backgroundMusic.muted = false;
+        if (backgroundMusic.volume === 0) {
+          backgroundMusic.volume = 0.5;
+          volumeSlider.value = 0.5;
+        }
+      } else {
+        backgroundMusic.muted = true;
+      }
+      updateMuteButton();
+    });
+
+    volumeSlider.addEventListener("input", () => {
+      backgroundMusic.volume = parseFloat(volumeSlider.value);
+      if (backgroundMusic.volume === 0) {
+        backgroundMusic.muted = true;
+      } else {
+        backgroundMusic.muted = false;
+      }
+      updateMuteButton();
+    });
+
+    updateMuteButton();
+
+    // Try autoplay on load; if blocked, play on first user interaction
+    function tryPlayMusic() {
+      backgroundMusic.play().catch(() => {
+        // wait for user interaction to play
+        function userPlay() {
+          backgroundMusic.play();
+          window.removeEventListener("click", userPlay);
+          window.removeEventListener("keydown", userPlay);
+        }
+        window.addEventListener("click", userPlay);
+        window.addEventListener("keydown", userPlay);
+      });
+    }
+
+    window.addEventListener("load", () => {
+      tryPlayMusic();
     });
   </script>
 </body>
